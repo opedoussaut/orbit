@@ -1,0 +1,37 @@
+@prefix orbit: <http://example.org/orbit#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+# A target that is NOT typed as ProductSystem/LCStage/Activity
+orbit:UnknownTarget a orbit:SomethingElse .
+
+# Unit IRI defined
+orbit:kgCO2eq a orbit:IndicatorUnit .
+
+# A metric IRI that is NOT in the EF3.1 scheme
+orbit:ClimateChange_GWP20 a orbit:Metric .
+
+# --- Nonconforming LCIA results ---
+
+# FAIL 1: Missing orbit:hasMethod
+orbit:BadR1 a orbit:LCIAResult ;
+  orbit:forMetric orbit:ClimateChange_GWP100 ;
+  orbit:hasUnit orbit:kgCO2eq ;
+  orbit:hasNumericalValue "10.0"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_1 .
+
+# FAIL 2: Metric not in EF3.1 scheme
+orbit:PS_1 a orbit:ProductSystem .
+orbit:BadR2 a orbit:LCIAResult ;
+  orbit:forMetric orbit:ClimateChange_GWP20 ;
+  orbit:hasMethod orbit:BernModel_GWP100_IPCC2021 ;
+  orbit:hasUnit orbit:kgCO2eq ;
+  orbit:hasNumericalValue "5.0"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_1 .
+
+# FAIL 3: appliesTo is not typed correctly
+orbit:BadR3 a orbit:LCIAResult ;
+  orbit:forMetric orbit:ClimateChange_GWP100 ;
+  orbit:hasMethod orbit:BernModel_GWP100_IPCC2021 ;
+  orbit:hasUnit orbit:kgCO2eq ;
+  orbit:hasNumericalValue "1.0"^^xsd:decimal ;
+  orbit:appliesTo orbit:UnknownTarget .
