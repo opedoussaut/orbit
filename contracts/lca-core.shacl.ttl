@@ -1,1 +1,199 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix orbit: <http://example.org/orbit#> .
 
+######################################################################
+# ORBIT LCA-CORE Contract (v0.2.0)
+#
+# Purpose:
+# - Structural integrity for an LCA study representation
+# - Ensures goal/scope envelope exists and is explicit:
+#   Functional Unit, Reference Flow, System Boundary, Temporal scope
+#
+# Notes:
+# - This contract validates *structural completeness and consistency*,
+#   not scientific correctness or numerical computation.
+######################################################################
+
+############################
+# Study / Product System
+############################
+
+orbit:ProductSystemShape a sh:NodeShape ;
+  sh:targetClass orbit:ProductSystem ;
+  sh:message "ORBIT LCA-CORE: ProductSystem must be structurally complete (FU, boundary, reference flow, activities)." ;
+
+  # Exactly one functional unit
+  sh:property [
+    sh:path orbit:hasFunctionalUnit ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:class orbit:FunctionalUnit ;
+    sh:message "ProductSystem must have exactly one FunctionalUnit." ;
+  ] ;
+
+  # At least one reference flow
+  sh:property [
+    sh:path orbit:hasReferenceFlow ;
+    sh:minCount 1 ;
+    sh:class orbit:ReferenceFlow ;
+    sh:message "ProductSystem must declare at least one ReferenceFlow." ;
+  ] ;
+
+  # Exactly one system boundary
+  sh:property [
+    sh:path orbit:hasSystemBoundary ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:class orbit:SystemBoundary ;
+    sh:message "ProductSystem must have exactly one SystemBoundary." ;
+  ] ;
+
+  # At least one activity (so this is more than metadata)
+  sh:property [
+    sh:path orbit:hasActivity ;
+    sh:minCount 1 ;
+    sh:class orbit:Activity ;
+    sh:message "ProductSystem must link to at least one Activity." ;
+  ] .
+
+############################
+# Functional Unit
+############################
+
+orbit:FunctionalUnitShape a sh:NodeShape ;
+  sh:targetClass orbit:FunctionalUnit ;
+
+  sh:property [
+    sh:path orbit:fuQuantity ;
+    sh:minCount 1 ;
+    sh:datatype xsd:decimal ;
+    sh:message "FunctionalUnit must declare fuQuantity (xsd:decimal)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:fuUnit ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "FunctionalUnit must declare fuUnit as an IRI (unit identifier)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:fuDescription ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:message "FunctionalUnit must declare fuDescription (human-readable statement)." ;
+  ] .
+
+############################
+# Reference Flow
+############################
+
+orbit:ReferenceFlowShape a sh:NodeShape ;
+  sh:targetClass orbit:ReferenceFlow ;
+
+  sh:property [
+    sh:path orbit:refFlowQuantity ;
+    sh:minCount 1 ;
+    sh:datatype xsd:decimal ;
+    sh:message "ReferenceFlow must declare refFlowQuantity (xsd:decimal)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:refFlowUnit ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "ReferenceFlow must declare refFlowUnit as an IRI (unit identifier)." ;
+  ] ;
+
+  # minimal linkage to what this flow represents (product/flow identifier)
+  sh:property [
+    sh:path orbit:refersTo ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "ReferenceFlow must refer to a product/flow identifier (IRI)." ;
+  ] .
+
+############################
+# System Boundary
+############################
+
+orbit:SystemBoundaryShape a sh:NodeShape ;
+  sh:targetClass orbit:SystemBoundary ;
+
+  # boundary type is essential for comparability and reporting readiness
+  sh:property [
+    sh:path orbit:boundaryType ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "SystemBoundary must declare boundaryType as an IRI (e.g., cradle-to-gate)." ;
+  ] ;
+
+  # optional but strongly recommended: boundary statement
+  sh:property [
+    sh:path orbit:boundaryDescription ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:message "SystemBoundary should declare boundaryDescription (what is included/excluded)." ;
+  ] .
+
+############################
+# Activities
+############################
+
+orbit:ActivityCoreShape a sh:NodeShape ;
+  sh:targetClass orbit:Activity ;
+
+  sh:property [
+    sh:path orbit:hasLCStage ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "Activity must have exactly one LCStage (IRI)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:hasReferenceYear ;
+    sh:minCount 1 ;
+    sh:datatype xsd:gYear ;
+    sh:message "Activity must declare hasReferenceYear (xsd:gYear)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:hasValidityYear ;
+    sh:minCount 1 ;
+    sh:datatype xsd:gYear ;
+    sh:message "Activity must declare hasValidityYear (xsd:gYear)." ;
+  ] ;
+
+  # Consistency: validity >= reference year
+  sh:sparql [
+    a sh:SPARQLConstraint ;
+    sh:message "Activity validity year must be >= reference year." ;
+    sh:select """
+      SELECT $this WHERE {
+        $this orbit:hasReferenceYear ?ry ;
+              orbit:hasValidityYear  ?vy .
+        FILTER (?vy < ?ry)
+      }
+    """ ;
+  ] .
+
+############################
+# Cross-object consistency checks
+############################
+
+# Ensure the ProductSystem and its FU exist as a pair (not dangling)
+orbit:ProductSystemFUConsistency a sh:NodeShape ;
+  sh:targetClass orbit:ProductSystem ;
+  sh:sparql [
+    a sh:SPARQLConstraint ;
+    sh:message "ProductSystem must point to an existing FunctionalUnit node." ;
+    sh:select """
+      SELECT $this WHERE {
+        $this orbit:hasFunctionalUnit ?fu .
+        FILTER NOT EXISTS { ?fu a orbit:FunctionalUnit . }
+      }
+    """ ;
+  ] .
