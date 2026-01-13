@@ -1,1 +1,100 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix orbit: <http://example.org/orbit#> .
 
+######################################################################
+# ORBIT LCIA-METRICS Contract (v0.2.0)
+#
+# Purpose:
+# - Validate that LCIA results are "comparability-ready":
+#   metric identity, method binding, unit binding, numeric value,
+#   and explicit scope target.
+#
+# EF3.1 alignment:
+# - orbit:forMetric MUST be a skos:Concept in orbit:EF31MidpointMetricScheme
+######################################################################
+
+orbit:LCIAResultShape_EF31 a sh:NodeShape ;
+  sh:targetClass orbit:LCIAResult ;
+  sh:message "ORBIT LCIA-METRICS: LCIAResult must be comparable-ready (metric+method+unit+value+scope)." ;
+
+  sh:property [
+    sh:path orbit:forMetric ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "LCIAResult must reference exactly one metric concept IRI (orbit:forMetric)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:hasMethod ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "LCIAResult must reference exactly one LCIA method IRI (orbit:hasMethod)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:hasUnit ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "LCIAResult must reference exactly one unit IRI (orbit:hasUnit)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:hasNumericalValue ;
+    sh:minCount 1 ;
+    sh:datatype xsd:decimal ;
+    sh:message "LCIAResult must have a numerical value (xsd:decimal)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:appliesTo ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "LCIAResult must declare its scope target (orbit:appliesTo) as an IRI." ;
+  ] ;
+
+  # Optional but useful: result timestamp
+  sh:property [
+    sh:path orbit:resultYear ;
+    sh:maxCount 1 ;
+    sh:datatype xsd:gYear ;
+    sh:message "If present, resultYear must be xsd:gYear." ;
+  ] ;
+
+  # Contract rule: metric must belong to EF3.1 midpoint scheme
+  sh:sparql [
+    a sh:SPARQLConstraint ;
+    sh:message "orbit:forMetric must be a skos:Concept in orbit:EF31MidpointMetricScheme (EF 3.1 midpoint)." ;
+    sh:select """
+      SELECT $this WHERE {
+        $this orbit:forMetric ?m .
+        FILTER NOT EXISTS {
+          ?m skos:inScheme orbit:EF31MidpointMetricScheme .
+        }
+      }
+    """ ;
+  ] ;
+
+  # Contract rule: appliesTo must be ProductSystem OR LCStage OR Activity (by rdf:type)
+  sh:sparql [
+    a sh:SPARQLConstraint ;
+    sh:message "orbit:appliesTo must be typed as orbit:ProductSystem or orbit:LCStage or orbit:Activity." ;
+    sh:select """
+      SELECT $this WHERE {
+        $this orbit:appliesTo ?t .
+        FILTER NOT EXISTS {
+          { ?t a orbit:ProductSystem . }
+          UNION
+          { ?t a orbit:LCStage . }
+          UNION
+          { ?t a orbit:Activity . }
+        }
+      }
+    """ ;
+  ] .
