@@ -1,0 +1,20 @@
+@prefix orbit: <http://example.org/orbit#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+orbit:PS_Bad a orbit:ProductSystem ;
+  orbit:hasReferenceFlow orbit:RF_Bad ;
+  orbit:hasActivity orbit:A_Bad .
+
+# Missing: hasFunctionalUnit
+# Missing: hasSystemBoundary
+
+orbit:RF_Bad a orbit:ReferenceFlow ;
+  orbit:refFlowQuantity "1.0"^^xsd:decimal .
+  # Missing: refFlowUnit
+  # Missing: refersTo
+
+orbit:A_Bad a orbit:Activity ;
+  orbit:hasLCStage orbit:Manufacturing ;
+  orbit:hasReferenceYear "2025"^^xsd:gYear ;
+  orbit:hasValidityYear  "2024"^^xsd:gYear .
+  # Fails: validity year < reference year

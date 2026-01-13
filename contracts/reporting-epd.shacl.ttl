@@ -1,0 +1,149 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix orbit: <http://example.org/orbit#> .
+
+######################################################################
+# ORBIT REPORTING-EPD Contract (v0.2.0)
+#
+# Purpose:
+# - Validate that a published EPD-style report is structurally defensible:
+#   PCR reference, standard reference, publication metadata, and
+#   a required LCIA metric set.
+#
+# Notes:
+# - This contract does NOT certify an EPD and does NOT recompute results.
+# - It enforces "EPD readiness": completeness + traceability + declared basis.
+######################################################################
+
+############################
+# EPD Report envelope
+############################
+
+orbit:EPDReportShape a sh:NodeShape ;
+  sh:targetClass orbit:EPDReport ;
+  sh:message "ORBIT REPORTING-EPD: EPDReport must declare PCR/standard metadata and link to a ProductSystem." ;
+
+  sh:property [
+    sh:path orbit:reportsOn ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:class orbit:ProductSystem ;
+    sh:message "EPDReport must link to exactly one ProductSystem (orbit:reportsOn)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:conformsToPCR ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "EPDReport must reference a PCR (orbit:conformsToPCR) as an IRI." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:declaresStandard ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "EPDReport must reference the governing standard (orbit:declaresStandard) as an IRI." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:publicationDate ;
+    sh:minCount 1 ;
+    sh:datatype xsd:date ;
+    sh:message "EPDReport must declare publicationDate (xsd:date)." ;
+  ] ;
+
+  sh:property [
+    sh:path orbit:publisher ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:message "EPDReport must declare publisher (string)." ;
+  ] ;
+
+  # Verification/review status is required for defensibility (not necessarily 'verified', but declared)
+  sh:property [
+    sh:path orbit:verificationStatus ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "EPDReport must declare verificationStatus as an IRI (e.g., verified / internal-review / not-reviewed)." ;
+  ] ;
+
+  # Require an explicit boundary statement at report level (can point to same boundary as the study)
+  sh:property [
+    sh:path orbit:declaresSystemBoundary ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:message "EPDReport must declareSystemBoundary (IRI). Can point to the study boundary." ;
+  ] ;
+
+  # Require the EPD to declare what metric scheme it uses (EF3.1 midpoint scheme in this version)
+  sh:property [
+    sh:path orbit:usesMetricScheme ;
+    sh:minCount 1 ;
+    sh:hasValue orbit:EF31MidpointMetricScheme ;
+    sh:message "EPDReport must declare it uses the EF3.1 midpoint metric scheme (orbit:EF31MidpointMetricScheme)." ;
+  ] .
+
+############################
+# Required metrics gate (EPD readiness)
+############################
+
+# This contract requires that the ProductSystem referenced by the EPDReport
+# has LCIAResult entries for a mandatory set of EF3.1 midpoint metrics.
+#
+# Minimal "EPD readiness" set here:
+# - Climate change (GWP100)
+# - Acidification
+# - Water use (AWARE)
+# - Resource use, fossil
+# - Resource use, minerals & metals
+#
+# You can extend this list later (still within v0.2.0).
+
+orbit:EPDRequiredMetricSet a sh:NodeShape ;
+  sh:targetClass orbit:EPDReport ;
+
+  sh:sparql [
+    a sh:SPARQLConstraint ;
+    sh:message "EPDReport's ProductSystem must report required EF3.1 metrics (CC, Acidification, Water use, Resource use fossil, Resource use minerals&metals)." ;
+    sh:select """
+      SELECT $this WHERE {
+        $this orbit:reportsOn ?ps .
+
+        # Climate change
+        FILTER NOT EXISTS {
+          ?r a orbit:LCIAResult ;
+             orbit:appliesTo ?ps ;
+             orbit:forMetric orbit:ClimateChange_GWP100 .
+        }
+        UNION
+        # Acidification
+        FILTER NOT EXISTS {
+          ?r a orbit:LCIAResult ;
+             orbit:appliesTo ?ps ;
+             orbit:forMetric orbit:Acidification_AE_molHplusEq .
+        }
+        UNION
+        # Water use
+        FILTER NOT EXISTS {
+          ?r a orbit:LCIAResult ;
+             orbit:appliesTo ?ps ;
+             orbit:forMetric orbit:WaterUse_AWARE_m3worldEqDeprived .
+        }
+        UNION
+        # Resource use fossil
+        FILTER NOT EXISTS {
+          ?r a orbit:LCIAResult ;
+             orbit:appliesTo ?ps ;
+             orbit:forMetric orbit:ResourceUse_Fossil_ADPfossil_MJ .
+        }
+        UNION
+        # Resource use minerals & metals
+        FILTER NOT EXISTS {
+          ?r a orbit:LCIAResult ;
+             orbit:appliesTo ?ps ;
+             orbit:forMetric orbit:ResourceUse_MineralsMetals_ADPultimate_kgSbeq .
+        }
+      }
+    """ ;
+  ] .

@@ -1,0 +1,26 @@
+@prefix orbit: <http://example.org/orbit#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+orbit:PS_EPD_BAD a orbit:ProductSystem .
+
+# Missing required metrics results (only climate change present)
+orbit:kgCO2eq a orbit:IndicatorUnit .
+orbit:SomeMethod a orbit:Method .
+
+orbit:R_CC_only a orbit:LCIAResult ;
+  orbit:forMetric orbit:ClimateChange_GWP100 ;
+  orbit:hasMethod orbit:SomeMethod ;
+  orbit:hasUnit orbit:kgCO2eq ;
+  orbit:hasNumericalValue "9.0"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_EPD_BAD .
+
+# EPD report missing several required metadata fields + wrong scheme
+orbit:EPD_BAD a orbit:EPDReport ;
+  orbit:reportsOn orbit:PS_EPD_BAD ;
+  orbit:conformsToPCR orbit:PCR_Demo_001 ;
+  orbit:publisher "Demo program operator" .
+  # Missing: declaresStandard
+  # Missing: publicationDate
+  # Missing: verificationStatus
+  # Missing: declaresSystemBoundary
+  # Missing: usesMetricScheme (and must be EF31MidpointMetricScheme)

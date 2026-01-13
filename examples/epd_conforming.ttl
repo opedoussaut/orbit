@@ -1,0 +1,63 @@
+@prefix orbit: <http://example.org/orbit#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+# --- Study / product system ---
+orbit:PS_EPD a orbit:ProductSystem .
+
+# --- Boundary node (reused at report level) ---
+orbit:SB_EPD a orbit:SystemBoundary .
+
+# --- Required LCIA results on the ProductSystem (metric IRIs come from your EF3.1 SKOS vocab) ---
+orbit:kgCO2eq a orbit:IndicatorUnit .
+orbit:molHplusEq a orbit:IndicatorUnit .
+orbit:m3WorldEqDeprived a orbit:IndicatorUnit .
+orbit:MJ a orbit:IndicatorUnit .
+orbit:kgSbeq a orbit:IndicatorUnit .
+
+orbit:SomeMethod a orbit:Method .
+
+orbit:R_CC a orbit:LCIAResult ;
+  orbit:forMetric orbit:ClimateChange_GWP100 ;
+  orbit:hasMethod orbit:SomeMethod ;
+  orbit:hasUnit orbit:kgCO2eq ;
+  orbit:hasNumericalValue "10.0"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_EPD .
+
+orbit:R_AC a orbit:LCIAResult ;
+  orbit:forMetric orbit:Acidification_AE_molHplusEq ;
+  orbit:hasMethod orbit:SomeMethod ;
+  orbit:hasUnit orbit:molHplusEq ;
+  orbit:hasNumericalValue "0.05"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_EPD .
+
+orbit:R_WU a orbit:LCIAResult ;
+  orbit:forMetric orbit:WaterUse_AWARE_m3worldEqDeprived ;
+  orbit:hasMethod orbit:SomeMethod ;
+  orbit:hasUnit orbit:m3WorldEqDeprived ;
+  orbit:hasNumericalValue "2.2"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_EPD .
+
+orbit:R_RUf a orbit:LCIAResult ;
+  orbit:forMetric orbit:ResourceUse_Fossil_ADPfossil_MJ ;
+  orbit:hasMethod orbit:SomeMethod ;
+  orbit:hasUnit orbit:MJ ;
+  orbit:hasNumericalValue "100.0"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_EPD .
+
+orbit:R_RUmm a orbit:LCIAResult ;
+  orbit:forMetric orbit:ResourceUse_MineralsMetals_ADPultimate_kgSbeq ;
+  orbit:hasMethod orbit:SomeMethod ;
+  orbit:hasUnit orbit:kgSbeq ;
+  orbit:hasNumericalValue "0.001"^^xsd:decimal ;
+  orbit:appliesTo orbit:PS_EPD .
+
+# --- EPD report envelope ---
+orbit:EPD_1 a orbit:EPDReport ;
+  orbit:reportsOn orbit:PS_EPD ;
+  orbit:conformsToPCR orbit:PCR_Demo_001 ;
+  orbit:declaresStandard orbit:EN15804 ;
+  orbit:publisher "Demo program operator" ;
+  orbit:publicationDate "2026-01-13"^^xsd:date ;
+  orbit:verificationStatus orbit:verified ;
+  orbit:declaresSystemBoundary orbit:SB_EPD ;
+  orbit:usesMetricScheme orbit:EF31MidpointMetricScheme .

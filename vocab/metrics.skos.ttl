@@ -1,0 +1,186 @@
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix orbit: <http://example.org/orbit#> .
+
+######################################################################
+# ORBIT LCIA Metrics Vocabulary
+# Aligned with EF 3.1 midpoint impact categories (indicator + unit + method)
+######################################################################
+
+orbit:EF31MidpointMetricScheme a skos:ConceptScheme ;
+  skos:prefLabel "ORBIT LCIA Metrics (EF 3.1 Midpoint)"@en ;
+  dct:description "Midpoint LCIA metrics aligned with EF 3.1 impact categories, indicators, units, and underlying LCIA methods."@en ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Climate change
+######################################################################
+
+orbit:ClimateChange_GWP100 a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Climate change — GWP100"@en ;
+  skos:altLabel "Radiative forcing as Global Warming Potential (GWP100)"@en ;
+  orbit:recommendedUnit orbit:kgCO2eq ;
+  orbit:underlyingLCIAMethod orbit:BernModel_GWP100_IPCC2021 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Ozone depletion
+######################################################################
+
+orbit:OzoneDepletion_ODP a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Ozone depletion — ODP"@en ;
+  skos:altLabel "Ozone Depletion Potential (ODP)"@en ;
+  orbit:recommendedUnit orbit:kgCFC11eq ;
+  orbit:underlyingLCIAMethod orbit:EDIP_ODP_WMO2014 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Human toxicity
+######################################################################
+
+orbit:HumanToxicity_Cancer_CTUh a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Human toxicity, cancer — CTUh"@en ;
+  skos:altLabel "Comparative Toxic Unit for humans (CTUh)"@en ;
+  orbit:recommendedUnit orbit:CTUh ;
+  orbit:underlyingLCIAMethod orbit:USEtox_2_1_HumanToxicity_Cancer ;
+  dct:source "EF 3.1 midpoint"@en .
+
+orbit:HumanToxicity_NonCancer_CTUh a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Human toxicity, non-cancer — CTUh"@en ;
+  skos:altLabel "Comparative Toxic Unit for humans (CTUh)"@en ;
+  orbit:recommendedUnit orbit:CTUh ;
+  orbit:underlyingLCIAMethod orbit:USEtox_2_1_HumanToxicity_NonCancer ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Particulate matter
+######################################################################
+
+orbit:ParticulateMatter_DiseaseIncidence a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Particulate matter — disease incidences"@en ;
+  skos:altLabel "Human health effects associated with exposure to PM2.5"@en ;
+  orbit:recommendedUnit orbit:DiseaseIncidence ;
+  orbit:underlyingLCIAMethod orbit:PM2_5_Fantke_UNEP2016 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Ionising radiation, human health
+######################################################################
+
+orbit:IonisingRadiation_HumanHealth_kBqU235eq a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Ionising radiation, human health — kBq U235 eq"@en ;
+  skos:altLabel "Human exposure efficiency relative to U235"@en ;
+  orbit:recommendedUnit orbit:kBqU235 ;
+  orbit:underlyingLCIAMethod orbit:Dreicer1995_Frischknecht2000 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Photochemical ozone formation, human health
+######################################################################
+
+orbit:PhotochemicalOzoneFormation_HH_kgNMVOCeq a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Photochemical ozone formation, human health — kg NMVOC eq"@en ;
+  skos:altLabel "Tropospheric ozone concentration increase"@en ;
+  orbit:recommendedUnit orbit:kgNMVOCeq ;
+  orbit:underlyingLCIAMethod orbit:LOTOS_EUROS_ReCiPe2008 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Acidification
+######################################################################
+
+orbit:Acidification_AE_molHplusEq a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Acidification — accumulated exceedance (AE)"@en ;
+  orbit:recommendedUnit orbit:molHplusEq ;
+  orbit:underlyingLCIAMethod orbit:AccumulatedExceedance_Seppala2006_Posch2008 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Eutrophication
+######################################################################
+
+orbit:Eutrophication_Terrestrial_AE_molNeq a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Eutrophication, terrestrial — AE"@en ;
+  orbit:recommendedUnit orbit:molNeq ;
+  orbit:underlyingLCIAMethod orbit:AccumulatedExceedance_Seppala2006_Posch2008 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+orbit:Eutrophication_Freshwater_kgPeq a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Eutrophication, freshwater — kg P eq"@en ;
+  skos:altLabel "Fraction of nutrients reaching freshwater end compartment (P)"@en ;
+  orbit:recommendedUnit orbit:kgPeq ;
+  orbit:underlyingLCIAMethod orbit:EUTREND_ReCiPe2008 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+orbit:Eutrophication_Marine_kgNeq a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Eutrophication, marine — kg N eq"@en ;
+  skos:altLabel "Fraction of nutrients reaching marine end compartment (N)"@en ;
+  orbit:recommendedUnit orbit:kgNeq ;
+  orbit:underlyingLCIAMethod orbit:EUTREND_ReCiPe2008 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Ecotoxicity, freshwater
+######################################################################
+
+orbit:Ecotoxicity_Freshwater_CTUe a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Ecotoxicity, freshwater — CTUe"@en ;
+  skos:altLabel "Comparative Toxic Unit for ecosystems (CTUe)"@en ;
+  orbit:recommendedUnit orbit:CTUe ;
+  orbit:underlyingLCIAMethod orbit:USEtox_2_1_Ecotoxicity_Freshwater ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Land use
+######################################################################
+
+orbit:LandUse_SoilQualityIndex_pt a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Land use — soil quality index (pt)"@en ;
+  orbit:recommendedUnit orbit:pt ;
+  orbit:underlyingLCIAMethod orbit:LANCA_CF_v2_5 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Water use
+######################################################################
+
+orbit:WaterUse_AWARE_m3worldEqDeprived a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Water use — user deprivation potential (AWARE)"@en ;
+  skos:altLabel "Deprivation-weighted water consumption"@en ;
+  orbit:recommendedUnit orbit:m3WorldEqDeprived ;
+  orbit:underlyingLCIAMethod orbit:AWARE_Boulay2018_UNEP2016 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+######################################################################
+# Resource use
+######################################################################
+
+orbit:ResourceUse_MineralsMetals_ADPultimate_kgSbeq a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Resource use, minerals and metals — ADP ultimate reserves"@en ;
+  skos:altLabel "Abiotic resource depletion (ADP ultimate reserves)"@en ;
+  orbit:recommendedUnit orbit:kgSbeq ;
+  orbit:underlyingLCIAMethod orbit:CML2002_v4_8_vanOers2002 ;
+  dct:source "EF 3.1 midpoint"@en .
+
+orbit:ResourceUse_Fossil_ADPfossil_MJ a skos:Concept ;
+  skos:inScheme orbit:EF31MidpointMetricScheme ;
+  skos:prefLabel "Resource use, fossil — ADP-fossil"@en ;
+  skos:altLabel "Abiotic resource depletion – fossil fuels (ADP-fossil)"@en ;
+  orbit:recommendedUnit orbit:MJ ;
+  orbit:underlyingLCIAMethod orbit:CML2002_v4_8_vanOers2002 ;
+  dct:source "EF 3.1 midpoint"@en .

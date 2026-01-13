@@ -1,0 +1,50 @@
+@prefix orbit: <http://example.org/orbit#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# --- Units (simple IRIs for now) ---
+orbit:unit_piece a rdf:Resource .
+orbit:unit_kg a rdf:Resource .
+
+# --- Boundary types (simple IRIs for now) ---
+orbit:CradleToGate a rdf:Resource .
+
+# --- Life-cycle stages (simple IRIs for now) ---
+orbit:Manufacturing a rdf:Resource .
+orbit:Use a rdf:Resource .
+
+# --- Product System ---
+orbit:PS_1 a orbit:ProductSystem ;
+  orbit:hasFunctionalUnit orbit:FU_1 ;
+  orbit:hasReferenceFlow orbit:RF_1 ;
+  orbit:hasSystemBoundary orbit:SB_1 ;
+  orbit:hasActivity orbit:A1 ;
+  orbit:hasActivity orbit:A2 .
+
+# --- Functional Unit ---
+orbit:FU_1 a orbit:FunctionalUnit ;
+  orbit:fuQuantity "1.0"^^xsd:decimal ;
+  orbit:fuUnit orbit:unit_piece ;
+  orbit:fuDescription "1 delivered product providing its intended function." .
+
+# --- Reference Flow ---
+orbit:RF_1 a orbit:ReferenceFlow ;
+  orbit:refFlowQuantity "1.0"^^xsd:decimal ;
+  orbit:refFlowUnit orbit:unit_piece ;
+  orbit:refersTo orbit:Product_ABC .
+
+# --- System Boundary ---
+orbit:SB_1 a orbit:SystemBoundary ;
+  orbit:boundaryType orbit:CradleToGate ;
+  orbit:boundaryDescription "Includes raw materials and manufacturing; excludes use and end-of-life." .
+
+# --- Activities ---
+orbit:A1 a orbit:Activity ;
+  orbit:hasLCStage orbit:Manufacturing ;
+  orbit:hasReferenceYear "2024"^^xsd:gYear ;
+  orbit:hasValidityYear  "2025"^^xsd:gYear .
+
+orbit:A2 a orbit:Activity ;
+  orbit:hasLCStage orbit:Use ;
+  orbit:hasReferenceYear "2024"^^xsd:gYear ;
+  orbit:hasValidityYear  "2025"^^xsd:gYear .
