@@ -105,44 +105,23 @@ orbit:EPDRequiredMetricSet a sh:NodeShape ;
 
   sh:sparql [
     a sh:SPARQLConstraint ;
-    sh:message "EPDReport's ProductSystem must report required EF3.1 metrics (CC, Acidification, Water use, Resource use fossil, Resource use minerals&metals)." ;
+    sh:message "EPDReport's ProductSystem is missing one or more required EF3.1 metrics (CC, Acidification, Water use, Resource use fossil, Resource use minerals&metals)." ;
     sh:select """
-      SELECT $this WHERE {
+      SELECT $this ?reqMetric WHERE {
         $this orbit:reportsOn ?ps .
 
-        # Climate change
-        FILTER NOT EXISTS {
-          ?r a orbit:LCIAResult ;
-             orbit:appliesTo ?ps ;
-             orbit:forMetric orbit:ClimateChange_GWP100 .
+        VALUES ?reqMetric {
+          orbit:ClimateChange_GWP100
+          orbit:Acidification_AE_molHplusEq
+          orbit:WaterUse_AWARE_m3worldEqDeprived
+          orbit:ResourceUse_Fossil_ADPfossil_MJ
+          orbit:ResourceUse_MineralsMetals_ADPultimate_kgSbeq
         }
-        UNION
-        # Acidification
+
         FILTER NOT EXISTS {
           ?r a orbit:LCIAResult ;
              orbit:appliesTo ?ps ;
-             orbit:forMetric orbit:Acidification_AE_molHplusEq .
-        }
-        UNION
-        # Water use
-        FILTER NOT EXISTS {
-          ?r a orbit:LCIAResult ;
-             orbit:appliesTo ?ps ;
-             orbit:forMetric orbit:WaterUse_AWARE_m3worldEqDeprived .
-        }
-        UNION
-        # Resource use fossil
-        FILTER NOT EXISTS {
-          ?r a orbit:LCIAResult ;
-             orbit:appliesTo ?ps ;
-             orbit:forMetric orbit:ResourceUse_Fossil_ADPfossil_MJ .
-        }
-        UNION
-        # Resource use minerals & metals
-        FILTER NOT EXISTS {
-          ?r a orbit:LCIAResult ;
-             orbit:appliesTo ?ps ;
-             orbit:forMetric orbit:ResourceUse_MineralsMetals_ADPultimate_kgSbeq .
+             orbit:forMetric ?reqMetric .
         }
       }
     """ ;
